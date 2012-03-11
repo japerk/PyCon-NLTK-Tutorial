@@ -1,0 +1,25 @@
+===============================
+Translating Text with Babelfish
+===============================
+
+>>> from nltk.misc import babelfish
+>>> babelfish.translate('cookbook', 'english', 'spanish')
+'libro de cocina'
+>>> babelfish.translate('libro de cocina', 'spanish', 'english')
+'kitchen book'
+>>> babelfish.translate('cookbook', 'english', 'german')
+'Kochbuch'
+>>> babelfish.translate('kochbuch', 'german', 'english')
+'cook book'
+
+>>> for text in babelfish.babelize('cookbook', 'english', 'spanish'):
+...             print text
+...
+cookbook
+libro de cocina
+kitchen book
+libro de la cocina
+book of the kitchen
+
+>>> babelfish.available_languages
+['Portuguese', 'Chinese', 'German', 'Japanese', 'French', 'Spanish', 'Russian', 'Greek', 'English', 'Korean', 'Italian']

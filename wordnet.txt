@@ -1,0 +1,97 @@
+=========================================
+Looking up a Synset for a Word in WordNet
+=========================================
+
+>>> from nltk.corpus import wordnet
+>>> syn = wordnet.synsets('cookbook')[0]
+>>> syn.name
+'cookbook.n.01'
+>>> syn.definition
+'a book of recipes and cooking directions'
+
+>>> wordnet.synset('cookbook.n.01')
+Synset('cookbook.n.01')
+
+>>> syn.examples
+['cooking can be a great art', 'people are needed who have experience in cookery', 'he left the preparation of meals to his wife']
+
+>>> syn.hypernyms()
+[Synset('reference_book.n.01')]
+>>> syn.hypernyms()[0].hyponyms()
+[Synset('encyclopedia.n.01'), Synset('directory.n.01'), Synset('source_book.n.01'), Synset('handbook.n.01'), Synset('instruction_book.n.01'), Synset('cookbook.n.01'), Synset('annual.n.02'), Synset('atlas.n.02'), Synset('wordbook.n.01')]
+>>> syn.root_hypernyms()
+[Synset('entity.n.01')]
+
+>>> syn.hypernym_paths()
+[[Synset('entity.n.01'), Synset('physical_entity.n.01'), Synset('object.n.01'), Synset('whole.n.02'), Synset('artifact.n.01'), Synset('creation.n.02'), Synset('product.n.02'), Synset('work.n.02'), Synset('publication.n.01'), Synset('book.n.01'), Synset('reference_book.n.01'), Synset('cookbook.n.01')]]
+
+>>> syn.pos
+'n'
+
+=========================================
+Looking up Lemmas and Synonyms in WordNet
+=========================================
+
+>>> lemmas = syn.lemmas
+>>> len(lemmas)
+2
+>>> lemmas[0].name
+'cookbook'
+>>> lemmas[1].name
+'cookery_book'
+>>> lemmas[0].synset == lemmas[1].synset
+True
+
+>>> gn2 = wordnet.synset('good.n.02')
+>>> gn2.definition
+'moral excellence or admirableness'
+>>> evil = gn2.lemmas[0].antonyms()[0]
+>>> evil.name
+'evil'
+>>> evil.synset.definition
+'the quality of being morally wrong in principle or practice'
+>>> ga1 = wordnet.synset('good.a.01')
+>>> ga1.definition
+'having desirable or positive qualities especially those suitable for a thing specified'
+>>> bad = ga1.lemmas[0].antonyms()[0]
+>>> bad.name
+'bad'
+>>> bad.synset.definition
+'having undesirable or negative qualities'
+
+=====================================
+Calculating WordNet Synset Similarity
+=====================================
+
+>>> ib = wordnet.synset('instruction_book.n.01')
+>>> syn.wup_similarity(ib)
+0.9166666666666666
+
+>>> ref = syn.hypernyms()[0]
+>>> syn.shortest_path_distance(ref)
+1
+>>> ib.shortest_path_distance(ref)
+1
+>>> syn.shortest_path_distance(ib)
+2
+
+>>> dog = wordnet.synsets('dog')[0]
+>>> dog.wup_similarity(syn)
+0.38095238095238093
+
+>>> dog.common_hypernyms(syn)
+[Synset('object.n.01'), Synset('whole.n.02'), Synset('physical_entity.n.01'), Synset('entity.n.01')]
+
+>>> cook = wordnet.synset('cook.v.01')
+>>> bake = wordnet.synset('bake.v.02')
+>>> cook.wup_similarity(bake)
+0.6666666666666666
+
+>>> syn.path_similarity(ib)
+0.3333333333333333
+>>> syn.path_similarity(dog)
+0.07142857142857142
+>>> syn.lch_similarity(ib)
+2.538973871058276
+>>> syn.lch_similarity(dog)
+0.9985288301111273

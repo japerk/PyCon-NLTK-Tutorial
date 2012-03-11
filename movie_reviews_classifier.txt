@@ -1,0 +1,26 @@
+>>> import nltk.data
+>>> classifier = nltk.data.load('classifiers/movie_reviews_NaiveBayes.pickle')
+>>> from nltk import tokenize
+>>> words = tokenize.word_tokenize("that was a terrible movie")
+>>> feats = dict([(word, True) for word in words])
+>>> feats
+{'a': True, 'movie': True, 'was': True, 'terrible': True, 'that': True}
+>>> classifier.classify(feats)
+'neg'
+>>> probs = classifier.prob_classify(feats)
+>>> probs.prob('neg')
+0.789541654729651
+>>> probs.prob('pos')
+0.2104583452703487
+>>> classifier.show_most_informative_features()
+Most Informative Features
+                  avoids = True              pos : neg    =     13.0 : 1.0
+              astounding = True              pos : neg    =     12.3 : 1.0
+                    slip = True              pos : neg    =     11.7 : 1.0
+             outstanding = True              pos : neg    =     11.5 : 1.0
+               ludicrous = True              neg : pos    =     11.0 : 1.0
+               insulting = True              neg : pos    =     11.0 : 1.0
+             fascination = True              pos : neg    =     11.0 : 1.0
+                    3000 = True              neg : pos    =     11.0 : 1.0
+                   sucks = True              neg : pos    =     10.6 : 1.0
+                  hudson = True              neg : pos    =     10.3 : 1.0

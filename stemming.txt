@@ -1,0 +1,63 @@
+==============
+Stemming Words
+==============
+
+>>> from nltk import stem
+>>> stemmer = stem.PorterStemmer()
+>>> stemmer.stem('cooking')
+'cook'
+>>> stemmer.stem('cookery')
+'cookeri'
+
+>>> stemmer = stem.LancasterStemmer()
+>>> stemmer.stem('cooking')
+'cook'
+>>> stemmer.stem('cookery')
+'cookery'
+
+# essentially common suffix removal
+
+>>> stemmer = stem.RegexpStemmer('ing')
+>>> stemmer.stem('cooking')
+'cook'
+>>> stemmer.stem('cookery')
+'cookery'
+>>> stemmer.stem('ingleside')
+'leside'
+
+>>> stem.SnowballStemmer.languages
+('danish', 'dutch', 'english', 'finnish', 'french', 'german', 'hungarian', 'italian', 'norwegian', 'porter', 'portuguese', 'romanian', 'russian', 'spanish', 'swedish')
+>>> spanish_stemmer = stem.SnowballStemmer('spanish')
+>>> spanish_stemmer.stem('hola')
+u'hol'
+
+# SnowballStemmer('english') is an updated & improved Porter stemmer
+
+==============================
+Lemmatising Words with WordNet
+==============================
+
+>>> lemmatizer = stem.WordNetLemmatizer()
+>>> lemmatizer.lemmatize('cooking')
+'cooking'
+>>> lemmatizer.lemmatize('cooking', pos='v')
+'cook'
+>>> lemmatizer.lemmatize('cookbooks')
+'cookbook'
+
+# lemmatizing preserves meaning and lemmas are real words, while stems may not be
+
+>>> stemmer = stem.PorterStemmer()
+>>> stemmer.stem('believes')
+'believ'
+>>> lemmatizer.lemmatize('believes')
+'belief'
+
+>>> stemmer.stem('buses')
+'buse'
+>>> lemmatizer.lemmatize('buses')
+'bus'
+>>> stemmer.stem('bus')
+'bu'
+
+# lossy compression, can be useful for fuzzy matching

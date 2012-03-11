@@ -1,0 +1,66 @@
+=====================
+Sentence Tokenization
+=====================
+
+>>> para = "Hello. My name is Jacob. Today you'll be learning NLTK."
+>>> from nltk import tokenize
+>>> tokenize.sent_tokenize(para)
+['Hello.', 'My name is Jacob.', "Today you'll be learning NLTK."]
+
+>>> import nltk.data
+>>> tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+>>> sents = tokenizer.tokenize(para)
+>>> sents
+['Hello.', 'My name is Jacob.', "Today you'll be learning NLTK."]
+
+=================
+Word Tokenization
+=================
+
+>>> sent = sents[2]
+>>> tokenize.word_tokenize(sent)
+['Today', 'you', "'ll", 'be', 'learning', 'NLTK', '.']
+
+>>> tokenize.wordpunct_tokenize(sent)
+['Today', 'you', "'", 'll', 'be', 'learning', 'NLTK', '.']
+
+>>> from nltk.tokenize import WordPunctTokenizer
+>>> tokenizer = WordPunctTokenizer()
+>>> tokenizer.tokenize(sent)
+['Today', 'you', "'", 'll', 'be', 'learning', 'NLTK', '.']
+
+>>> tokenizer = tokenize.PunktWordTokenizer()
+>>> tokenizer.tokenize(sent)
+['Today', 'you', "'ll", 'be', 'learning', 'NLTK.']
+
+>>> tokenizer = tokenize.SpaceTokenizer()
+>>> tokenizer.tokenize(sent)
+['Today', "you'll", 'be', 'learning', 'NLTK.']
+
+
+Choosing a Word Tokenizer
+-------------------------
+Your choice of word tokenizer depends on further steps down the pipeline.
+There's no one right answer, it's context/pipeline dependent.
+Do you need a normalized/canonical form?
+How much does punctuation matter, and in what way?
+What does the pos tagger and/or classifier expect?
+Are you doing transformations?
+
+
+==========================================
+Tokenizing Words using Regular Expressions
+==========================================
+
+>>> from nltk.tokenize import RegexpTokenizer
+>>> tokenizer = RegexpTokenizer("[\w']+")
+>>> tokenizer.tokenize("Can't is a contraction.")
+["Can't", 'is', 'a', 'contraction']
+
+>>> from nltk.tokenize import regexp_tokenize
+>>> regexp_tokenize("Can't is a contraction.", "[\w']+")
+["Can't", 'is', 'a', 'contraction']
+
+>>> tokenizer = RegexpTokenizer('\s+', gaps=True)
+>>> tokenizer.tokenize("Can't is a contraction.")
+["Can't", 'is', 'a', 'contraction.']

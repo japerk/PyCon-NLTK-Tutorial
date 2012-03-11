@@ -1,0 +1,46 @@
+==================
+Default NE Chunker
+==================
+
+>>> sent = "Today you'll be learning NLTK."
+>>> from nltk import chunk, tag, tokenize
+>>> words = tokenize.word_tokenize(sent)
+>>> tagged_sent = tag.pos_tag(words)
+>>> tree = chunk.ne_chunk(tagged_sent)
+>>> tree
+Tree('S', [('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), Tree('ORGANIZATION', [('NLTK', 'NNP')]), ('.', '.')])
+>>> tree.draw()
+
+>>> import nltk.data
+>>> chunker = nltk.data.load(chunk._MULTICLASS_NE_CHUNKER)
+>>> chunker.parse(tagged_sent)
+Tree('S', [('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), Tree('ORGANIZATION', [('NLTK', 'NNP')]), ('.', '.')])
+
+=================
+Binary NE Chunker
+=================
+
+>>> chunk.ne_chunk(tagged_sent, binary=True)
+Tree('S', [('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), Tree('NE', [('NLTK', 'NNP')]), ('.', '.')])
+
+>>> binary_chunker = nltk.data.load(chunk._BINARY_NE_CHUNKER)
+>>> binary_chunker.parse(tagged_sent)
+Tree('S', [('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), Tree('NE', [('NLTK', 'NNP')]), ('.', '.')])
+
+=================
+Phrase Extraction
+=================
+
+>>> from nltk.tag import untag
+>>> untag(tagged_sent)
+['Today', 'you', "'ll", 'be', 'learning', 'NLTK', '.']
+
+>>> import collections
+>>> def extract_phrases(t):
+...    d = collections.defaultdict(list)
+...    for sub in t.subtrees(lambda s: s.node != 'S'):
+...        d[sub.node].append(' '.join(untag(sub.leaves())))
+...    return d
+
+>>> extract_phrases(tree)
+defaultdict(<type 'list'>, {'ORGANIZATION': ['NLTK']})

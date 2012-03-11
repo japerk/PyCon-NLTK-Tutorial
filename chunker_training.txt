@@ -1,0 +1,71 @@
+====================
+Treebank Chunk Trees
+====================
+
+>>> from nltk.corpus import treebank_chunk
+>>> treebank_chunk.chunked_sents()[0]
+Tree('S', [Tree('NP', [('Pierre', 'NNP'), ('Vinken', 'NNP')]), (',', ','), Tree('NP', [('61', 'CD'), ('years', 'NNS')]), ('old', 'JJ'), (',', ','), ('will', 'MD'), ('join', 'VB'), Tree('NP', [('the', 'DT'), ('board', 'NN')]), ('as', 'IN'), Tree('NP', [('a', 'DT'), ('nonexecutive', 'JJ'), ('director', 'NN'), ('Nov.', 'NNP'), ('29', 'CD')]), ('.', '.')])
+
+>>> from nltk import chunk
+>>> import nltk.data
+>>> chunker = nltk.data.load(chunk._MULTICLASS_NE_CHUNKER)
+>>> score = chunker.evaluate(treebank_chunk.chunked_sents())
+>>> print score
+ChunkParse score:
+    IOB Accuracy:  45.4%
+    Precision:      0.0%
+    Recall:         0.0%
+    F-Measure:      0.0%
+
+# treebank_chunk doesn't have named entities, so score is not really accurate
+
+>>> score.accuracy()
+0.4536624203821656
+>>> score.precision()
+0.0
+>>> score.recall()
+0.0
+>>> len(score.correct())
+24667
+>>> len(score.incorrect())
+5659
+>>> len(score.missed())
+24667
+
+======================
+Simplified Chunk Trees
+======================
+
+>>> import chunk_parser
+>>> simple_chunks = [chunk_parser.simplify_chunk(c) for c in treebank_chunk.chunked_sents()]
+>>> simple_chunks[0]
+Tree('S', [Tree('NP', [('Pierre', 'NP'), ('Vinken', 'NP')]), (',', ','), Tree('NP', [('61', 'NUM'), ('years', 'N')]), ('old', 'ADJ'), (',', ','), ('will', 'MOD'), ('join', 'V'), Tree('NP', [('the', 'DET'), ('board', 'N')]), ('as', 'P'), Tree('NP', [('a', 'DET'), ('nonexecutive', 'ADJ'), ('director', 'N'), ('Nov.', 'NP'), ('29', 'NUM')]), ('.', '.')])
+
+>>> chunker = chunk_parser.ChunkParser(simple_chunks)
+>>> score = chunker.evaluate(simple_chunks)
+>>> print score
+ChunkParse score:
+    IOB Accuracy:  97.6%
+    Precision:     93.0%
+    Recall:        94.4%
+    F-Measure:     93.7%
+
+# score is self-accurate and doesn't reflect real-world usage
+
+>>> import os, os.path, pickle
+>>> path = os.path.expanduser('~/nltk_data/chunkers/')
+>>> os.makedirs(path)
+>>> f = open(os.path.join(path, 'chunk_parser.pickle'), 'wb')
+>>> pickle.dump(chunker, f)
+>>> f.close()
+
+>>> iob_tagged = chunker._parse_to_tagged(simple_chunks[0])
+>>> iob_tagged
+[(('Pierre', 'NP'), 'B-NP'), (('Vinken', 'NP'), 'I-NP'), ((',', ','), 'O'), (('61', 'NUM'), 'B-NP'), (('years', 'N'), 'I-NP'), (('old', 'ADJ'), 'O'), ((',', ','), 'O'), (('will', 'MOD'), 'O'), (('join', 'V'), 'O'), (('the', 'DET'), 'B-NP'), (('board', 'N'), 'I-NP'), (('as', 'P'), 'O'), (('a', 'DET'), 'B-NP'), (('nonexecutive', 'ADJ'), 'I-NP'), (('director', 'N'), 'I-NP'), (('Nov.', 'NP'), 'I-NP'), (('29', 'NUM'), 'I-NP'), (('.', '.'), 'O')]
+>>> chunker._tagged_to_parse(iob_tagged) == simple_chunks[0]
+True
+>>> iob_tagged[0]
+(('Pierre', 'NP'), 'B-NP')
+>>> untagged, tags = zip(*iob_tagged)
+>>> chunker._tagger._feature_detector(untagged, 0, [])
+{'nextpos': 'np', 'pos+prevtag': 'NP+None', 'nextword': 'vinken', 'word': 'Pierre', 'prefix3': 'pie', 'wordlen': 6, 'prevpos': None, 'pos': 'NP', 'prevtag': None, 'prevword': None, 'shape': 'upcase', 'bias': True, 'en-wordlist': False, 'shape+prevtag': 'None+None', 'suffix3': 'rre', 'word+nextpos': 'pierre+np'}

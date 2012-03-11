@@ -1,0 +1,82 @@
+======================================
+Train Naive Bayes Sentiment Classifier
+======================================
+
+>>> from nltk.corpus import movie_reviews
+>>> from nltk.classify import NaiveBayesClassifier
+>>> def bag_of_words(para):
+...     return dict([(word, True) for sent in para for word in sent])
+
+>>> bag_of_words([['great', 'movie']])
+{'movie': True, 'great': True}
+>>> pos_feats = [(bag_of_words(para), 'pos') for para in movie_reviews.paras(categories=['pos'])]
+>>> neg_feats = [(bag_of_words(para), 'neg') for para in movie_reviews.paras(categories=['neg'])]
+>>> pos_cutoff = len(pos_feats) * 3/4
+>>> neg_cutoff = len(neg_feats) * 3/4
+>>> train_feats = pos_feats[:pos_cutoff] + neg_feats[:neg_cutoff]
+>>> test_feats = pos_feats[pos_cutoff:] + neg_feats[neg_cutoff:]
+>>> classifier = NaiveBayesClassifier.train(train_feats)
+>>> classifier.classify({'great': True, 'movie': True})
+'pos'
+>>> classifier.classify({'bad': True, 'movie': True})
+'neg'
+
+>>> from nltk.classify.util import accuracy
+>>> accuracy(classifier, test_feats)
+0.728
+
+# low accuracy is usually not the algorithms fault, but noisy data
+
+>>> classifier.show_most_informative_features()
+Most Informative Features
+             magnificent = True              pos : neg    =     15.0 : 1.0
+             outstanding = True              pos : neg    =     13.6 : 1.0
+               insulting = True              neg : pos    =     13.0 : 1.0
+              vulnerable = True              pos : neg    =     12.3 : 1.0
+               ludicrous = True              neg : pos    =     11.8 : 1.0
+                  avoids = True              pos : neg    =     11.7 : 1.0
+             uninvolving = True              neg : pos    =     11.7 : 1.0
+              astounding = True              pos : neg    =     10.3 : 1.0
+             fascination = True              pos : neg    =     10.3 : 1.0
+                 idiotic = True              neg : pos    =      9.8 : 1.0
+
+
+====================
+Precision and Recall
+====================
+
+>>> import collections
+>>> def build_ref_test_sets(classifier, labeled_feats):
+...     refsets = collections.defaultdict(set)
+...     testsets = collections.defaultdict(set)
+...     for i, (feat, label) in enumerate(labeled_feats):
+...         refsets[label].add(i)
+...         guess = classifier.classify(feat)
+...         testsets[guess].add(i)
+...     return refsets, testsets
+
+>>> refsets, testsets = build_ref_test_sets(classifier, test_feats)
+>>> from nltk import metrics
+
+# precision measures lack of false positives, or what percentage of guesses were correct
+# a false positive would be a featureset that was guessed to be pos, but wasn't
+
+>>> metrics.precision(refsets['pos'], testsets['pos'])
+0.651595744680851
+>>> metrics.precision(refsets['neg'], testsets['neg'])
+0.9596774193548387
+
+# recall measures lack of false negatives, or what percentage was guessed correctly
+# a false negative would be a featureset that should have been guessed to be pos, but wasn't
+
+>>> metrics.recall(refsets['pos'], testsets['pos'])
+0.98
+>>> metrics.recall(refsets['neg'], testsets['neg'])
+0.476
+
+# F-measure is the harmonic mean of precision and recall
+
+>>> metrics.f_measure(refsets['pos'], testsets['pos'])
+0.7827476038338657
+>>> metrics.f_measure(refsets['neg'], testsets['neg'])
+0.6363636363636364

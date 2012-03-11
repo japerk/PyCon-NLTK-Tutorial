@@ -1,0 +1,10 @@
+>>> from nltk import tokenize
+>>> sent = tokenize.word_tokenize("Today you'll be learning NLTK.")
+>>> from nltk import tag
+>>> tag.pos_tag(sent)
+[('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), ('NLTK', 'NNP'), ('.', '.')]
+
+>>> import nltk.data
+>>> tagger = nltk.data.load(tag._POS_TAGGER)
+>>> tagger.tag(sent)
+[('Today', 'NN'), ('you', 'PRP'), ("'ll", 'MD'), ('be', 'VB'), ('learning', 'VBG'), ('NLTK', 'NNP'), ('.', '.')]
